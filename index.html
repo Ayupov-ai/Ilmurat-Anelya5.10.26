@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather in Almaty</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+        .loading span {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin: 0 3px;
+            background-color: #007BFF;
+            border-radius: 50%;
+            animation: bounce 1.2s infinite ease-in-out;
+        }
+        .loading span:nth-child(2) {
+            animation-delay: -0.2s;
+        }
+        .loading span:nth-child(3) {
+            animation-delay: -0.4s;
+        }
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Weather in Almaty</h1>
+        <div class="loading" id="loading">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        const apiKey = 'YOUR_API_KEY'; // Замените на ваш API-ключ
+        const baseUrl = 'https://api.openweathermap.org/data/2.5/weather?q=Almaty&appid=' + apiKey + '&units=metric';
+
+        function showLoading() {
+            const loadingDiv = document.getElementById('loading');
+            loadingDiv.style.display = 'inline-block';
+        }
+
+        function hideLoading() {
+            const loadingDiv = document.getElementById('loading');
+            loadingDiv.style.display = 'none';
+        }
+
+        function showResult(data) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <h2>Weather in ${data.name}</h2>
+                <p>Temperature: ${data.main.temp}°C</p>
+                <p>Weather: ${data.weather[0].description}</p>
+                <p>Humidity: ${data.main.humidity}%</p>
+                <p>Wind speed: ${data.wind.speed} m/s</p>
+            `;
+        }
+
+        async function getWeather() {
+            showLoading();
+            try {
+                const response = await fetch(baseUrl);
+                const data = await response.json();
+
+                if (response.ok) {
+                    hideLoading();
+                    showResult(data);
+                } else {
+                    alert(data.message);
+                    hideLoading();
+                }
+            } catch (error) {
+                alert('Error fetching weather data');
+                hideLoading();
+            }
+        }
+
+        // Запрос прогноза погоды сразу при загрузке страницы
+        window.onload = getWeather;
+    </script>
+
+</body>
+</html>
